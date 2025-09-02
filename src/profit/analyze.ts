@@ -1,29 +1,47 @@
-import { getPublic } from "../clients/public";
 import { formatUnits } from "viem";
+import { estimateFillGas, type RelayDataV3 } from "../across/estimator";
+import {
+  GAS_SAFETY_MULT,
+  GAS_PRICE_CAP_GWEI,
+  MIN_PROFIT_ETH,
+} from "../config/chains";
 
-// rough gas used per fill (tunable; start conservative)
-const GAS_USED_BY_CHAIN: Record<number, bigint> = {
-  1: 220_000n, // mainnet
-  42161: 350_000n, // arbitrum
-  10: 300_000n, // optimism
-};
+/**
+ * Exact profit using on-chain gas estimate for SpokePool.fillV3Relay(...)
+ */
+export async function analyzeQuote(
+  destChainId: number,
+  relayData: RelayDataV3,
+  repaymentChainId: bigint,
+  feeTotalWei: bigint
+) {
+  const est = await estimateFillGas(destChainId, relayData, repaymentChainId);
 
-export async function analyzeQuote(destChainId: number, feeTotalWei: bigint) {
-  const pub = getPublic(destChainId);
-  const gasPrice = await pub.getGasPrice(); // wei per gas
+  // Block if gas spikes beyond your cap
+  if (est.gasPriceGwei > GAS_PRICE_CAP_GWEI) {
+    return {
+      blockedByGasCap: true as const,
+      gas: est.gas,
+      gasPriceGwei: est.gasPriceGwei,
+      feeEth: 0,
+      costEth: Number.NaN,
+      profitEth: -Infinity,
+      minProfitEth: MIN_PROFIT_ETH,
+    };
+  }
 
-  const gasUsed = GAS_USED_BY_CHAIN[destChainId] ?? 300_000n;
-  const safety = 13n; // 1.3x buffer
-  const txCostWei = (gasUsed * gasPrice * safety) / 10n;
-
+  // Apply safety multiplier to estimated cost
+  const costEthBuffered = est.costEth * GAS_SAFETY_MULT;
   const feeEth = Number(formatUnits(feeTotalWei, 18));
-  const costEth = Number(formatUnits(txCostWei, 18));
-  const profitEth = feeEth - costEth;
+  const profitEth = feeEth - costEthBuffered;
 
   return {
+    blockedByGasCap: false as const,
+    gas: est.gas,
+    gasPriceGwei: est.gasPriceGwei,
     feeEth,
-    costEth,
+    costEth: costEthBuffered,
     profitEth,
-    gasPriceGwei: Number(formatUnits(gasPrice, 9)),
+    minProfitEth: MIN_PROFIT_ETH,
   };
 }

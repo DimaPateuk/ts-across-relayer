@@ -1,4 +1,4 @@
-import { formatUnits, type Address } from "viem";
+import { formatUnits, parseAbiItem, type Address } from "viem";
 import { getPublic } from "../clients/public";
 
 export type Bytes = `0x${string}`;
@@ -49,12 +49,14 @@ export const SPOKE_ABI = [
   },
 ] as const;
 
-/** TODO: replace placeholders with real SpokePool addresses */
 export const SPOKE_POOL: Record<number, Address> = {
-  1: "0xSpokePoolOnMainnet",
-  42161: "0xSpokePoolOnArbitrum",
-  10: "0xSpokePoolOnOptimism",
+  1: "0x5c7BCd6E7De5423a257D81B442095A1a6ced35C5", // Ethereum_SpokePool
+  42161: "0xe35e9842fceaca96570b734083f4a58e8f7c5f2a", // Arbitrum_SpokePool
+  10: "0x6f26Bf09B1C792e3228e5467807a900A503c0281", // Optimism_SpokePool
 };
+export const V3_FUNDS_DEPOSITED = parseAbiItem(
+  "event V3FundsDeposited(address indexed depositor, address indexed recipient, address indexed inputToken, address outputToken, uint256 inputAmount, uint256 outputAmount, uint256 originChainId, address exclusiveRelayer, uint32 quoteTimestamp, uint32 fillDeadline, uint32 exclusivityDeadline, bytes message)"
+);
 
 export async function estimateFillGas(
   destChainId: number,
@@ -84,3 +86,23 @@ export async function estimateFillGas(
     costEth: Number(formatUnits(costWei, 18)),
   };
 }
+export const SPOKE_EVENTS = [
+  {
+    type: "event",
+    name: "V3FundsDeposited",
+    inputs: [
+      { name: "depositor", type: "address", indexed: true },
+      { name: "recipient", type: "address", indexed: true },
+      { name: "inputToken", type: "address", indexed: true },
+      { name: "outputToken", type: "address", indexed: false },
+      { name: "inputAmount", type: "uint256", indexed: false },
+      { name: "outputAmount", type: "uint256", indexed: false },
+      { name: "originChainId", type: "uint256", indexed: false },
+      { name: "exclusiveRelayer", type: "address", indexed: false },
+      { name: "quoteTimestamp", type: "uint32", indexed: false },
+      { name: "fillDeadline", type: "uint32", indexed: false },
+      { name: "exclusivityDeadline", type: "uint32", indexed: false },
+      { name: "message", type: "bytes", indexed: false },
+    ],
+  },
+] as const;
