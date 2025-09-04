@@ -4,18 +4,29 @@
   "description": "",
   "main": "index.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev:mainnet": "dotenv -e .env.mainnet -- tsx src/index.ts",
+    "dev:testnet": "dotenv -e .env.testnet -- tsx src/index.ts",
+    "balances:mainnet": "dotenv -e .env.mainnet -- tsx src/tools/balances.ts",
+    "balances:testnet": "dotenv -e .env.testnet -- tsx src/tools/balances.ts",
+    "weth:mainnet": "dotenv -e .env.mainnet -- tsx src/tools/weth.ts",
+    "weth:testnet": "dotenv -e .env.testnet -- tsx src/tools/weth.ts",
+    "fetch:deposit:mainnet": "dotenv -e .env.mainnet -- tsx src/tools/fetchDeposit.ts",
+    "fetch:deposit:testnet": "dotenv -e .env.testnet -- tsx src/tools/fetchDeposit.ts",
+    "repay:watch:mainnet": "dotenv -e .env.mainnet -- WATCH=1 tsx src/tools/watchRepayments.ts",
+    "repay:watch:testnet": "dotenv -e .env.testnet -- WATCH=1 tsx src/tools/watchRepayments.ts"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "@across-protocol/app-sdk": "^0.3.0",
     "dotenv": "^17.2.1",
+    "dotenv-cli": "^10.0.0",
     "ethers": "^6.15.0",
     "node-fetch": "^3.3.2",
     "pino": "^9.9.0",
     "pino-pretty": "^13.1.1",
     "ts-node": "^10.9.2",
+    "tsx": "^4.20.5",
     "typescript": "^5.9.2",
     "zod": "^3.25.76"
   }

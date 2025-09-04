@@ -1,36 +1,76 @@
 import { createAcrossClient } from "@across-protocol/app-sdk";
-import { mainnet, arbitrum, optimism } from "viem/chains";
-import { getAddress } from "viem";
+import { createPublicClient, http, getAddress, type Address } from "viem";
+import {
+  mainnet,
+  arbitrum,
+  optimism,
+  sepolia,
+  optimismSepolia,
+  arbitrumSepolia,
+  type Chain,
+} from "viem/chains";
+import {
+  parseChains,
+  buildRpcMap,
+  buildWethMap,
+  buildSpokePoolMap,
+  envNum,
+  envStr,
+} from "./env";
 
-export const CHAINS = [mainnet.id, arbitrum.id, optimism.id];
-
-export const client = createAcrossClient({
-  chains: [mainnet, arbitrum, optimism],
-});
-
-export const AMOUNT_ETH = String(process.env.AMOUNT_ETH ?? "1");
-export const TARGET_DEST = Number(process.env.TARGET_DEST ?? "10"); // Optimism by default
-
-export const FILLER_ADDRESS = getAddress(
-  process.env.FILLER_ADDRESS || "0x0000000000000000000000000000000000000000"
-);
-
-/** WETH addresses (checksummed) */
-export const WETH: Record<number, `0x${string}`> = {
-  [mainnet.id]: getAddress("0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2"),
-  [arbitrum.id]: getAddress("0x82aF49447D8a07e3bd95BD0d56f35241523fBab1"),
-  [optimism.id]: getAddress("0x4200000000000000000000000000000000000006"),
+/* ----- chain registry (add more if needed) ----- */
+const byId: Record<number, Chain> = {
+  [mainnet.id]: mainnet,
+  [arbitrum.id]: arbitrum,
+  [optimism.id]: optimism,
+  [sepolia.id]: sepolia,
+  [optimismSepolia.id]: optimismSepolia,
+  [arbitrumSepolia.id]: arbitrumSepolia,
+};
+export const chainFromId = (id: number) => {
+  const c = byId[id];
+  if (!c) throw new Error(`Unsupported chainId ${id}`);
+  return c;
 };
 
-/* ---------- profit safety controls (env-configurable) ---------- */
-export const MIN_PROFIT_ETH = Number(process.env.MIN_PROFIT_ETH ?? "0.000001"); // floor
-export const GAS_PRICE_CAP_GWEI = Number(
-  process.env.GAS_PRICE_CAP_GWEI ?? "1.0"
-); // cap
-export const GAS_SAFETY_MULT = Number(process.env.GAS_SAFETY_MULT ?? "1.2"); // 20% buffer
+/* ----- core runtime knobs ----- */
+export const CHAINS = parseChains(); // e.g. "1,10,42161" or "11155111,11155420"
+export const TARGET_DEST = envNum("TARGET_DEST", 10);
+export const FETCH_ORIGIN_CHAIN_ID = envNum("FETCH_ORIGIN_CHAIN_ID", 1);
 export const FETCH_LOOKBACK_BLOCKS = BigInt(
-  process.env.FETCH_LOOKBACK_BLOCKS ?? "200"
+  envNum("FETCH_LOOKBACK_BLOCKS", 200)
 );
-export const FETCH_ORIGIN_CHAIN_ID = Number(
-  process.env.FETCH_ORIGIN_CHAIN_ID ?? "1"
+export const REPAY_CHAIN_ID = envNum("REPAY_CHAIN_ID", 1);
+
+export const AMOUNT_ETH = envStr("AMOUNT_ETH", "0.001");
+export const MIN_PROFIT_ETH = Number(envStr("MIN_PROFIT_ETH", "0.000001"));
+export const GAS_PRICE_CAP_GWEI = Number(envStr("GAS_PRICE_CAP_GWEI", "1.0"));
+export const GAS_SAFETY_MULT = Number(envStr("GAS_SAFETY_MULT", "1.2"));
+
+export const FILLER_ADDRESS = getAddress(
+  (process.env.FILLER_ADDRESS ??
+    "0x0000000000000000000000000000000000000000") as `0x${string}`
 );
+
+/* ----- per-chain maps built from simple env vars ----- */
+export const RPC_URLS = buildRpcMap(CHAINS); // reads RPC_{id}
+export const WETH: Record<number, Address> = buildWethMap(CHAINS); // reads WETH_{id}
+export const SPOKE_POOL: Record<number, Address> = buildSpokePoolMap(CHAINS); // reads SPOKEPOOL_{id}
+
+/* ----- helpers & clients ----- */
+export const getRpc = (chainId: number) => {
+  const url = RPC_URLS[chainId];
+  if (!url) throw new Error(`Missing RPC_${chainId}`);
+  return url;
+};
+
+export function makePublic(chainId: number) {
+  return createPublicClient({
+    chain: chainFromId(chainId),
+    transport: http(getRpc(chainId)),
+  });
+}
+
+export const client = createAcrossClient({
+  chains: CHAINS.map(chainFromId),
+});
