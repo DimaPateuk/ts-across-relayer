@@ -28,8 +28,8 @@ async function once() {
 
   const logs = await pub.getLogs({
     address: token,
-    event: ERC20_TRANSFER_ABI[0], // Transfer
-    args: { from, to }, // from SpokePool -> to you
+    event: ERC20_TRANSFER_ABI[0],
+    args: { from, to },
     fromBlock,
     toBlock: latest,
   });
@@ -41,7 +41,6 @@ async function once() {
     return;
   }
 
-  // print summary
   let total = 0n;
   for (const log of logs) {
     const v = log.args?.value as bigint;
@@ -58,9 +57,8 @@ async function once() {
 }
 
 async function watch() {
-  // simple polling loop
-  const intervalMs = Number(process.env.REPAY_POLL_MS ?? "12000"); // 12s
-  // track last processed block to avoid duplicates
+  const intervalMs = Number(process.env.REPAY_POLL_MS ?? "12000");
+
   let last = 0n;
 
   const pub = getPublic(REPAY_CHAIN_ID);
@@ -74,11 +72,11 @@ async function watch() {
   const tick = async () => {
     try {
       const latest = await pub.getBlockNumber();
-      // start from either the last seen, or a small lookback
+
       const fromBlock =
         last === 0n ? (latest > LOOKBACK ? latest - LOOKBACK : 0n) : last + 1n;
 
-      if (fromBlock > latest) return; // nothing new
+      if (fromBlock > latest) return;
 
       const logs = await pub.getLogs({
         address: token,
@@ -99,7 +97,7 @@ async function watch() {
         );
         if (log.blockNumber && log.blockNumber > last) last = log.blockNumber;
       }
-      // advance watermark even if no logs, so we don't scan forever
+
       if (latest > last) last = latest;
     } catch (e: any) {
       console.error("poll error:", e?.message ?? e);
@@ -113,7 +111,6 @@ async function watch() {
   setInterval(tick, intervalMs);
 }
 
-// choose one-shot vs. watch mode via env
 if (process.env.WATCH === "1") {
   watch().catch((e) => {
     console.error(e);

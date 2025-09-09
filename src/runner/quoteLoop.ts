@@ -47,12 +47,11 @@ export async function quoteLoop() {
   for (const origin of CHAINS) {
     for (const dest of CHAINS) {
       if (origin === dest) continue;
-      if (dest !== TARGET_DEST) continue; // focus on one destination while testing
+      if (dest !== TARGET_DEST) continue;
 
       const inputToken = WETH[origin];
       const outputToken = WETH[dest];
 
-      // 1) Get a quote for the configured test amount
       const quote = await client.getQuote({
         route: {
           originChainId: origin,
@@ -73,12 +72,10 @@ export async function quoteLoop() {
         "quote"
       );
 
-      // 2) How much WETH needed on dest
       const needWei = quote.deposit.outputAmount;
       const needEth = Number(formatUnits(needWei, 18));
       log.info({ origin, dest, needEth: needEth.toFixed(6) }, "✅ READY");
 
-      // 3) Check your filler’s balance
       const haveWei = await erc20Balance(dest, outputToken, FILLER_ADDRESS);
       const haveEth = Number(formatUnits(haveWei, 18));
 
@@ -101,7 +98,6 @@ export async function quoteLoop() {
         "🟢 ACTIONABLE"
       );
 
-      // 4) Fetch real relayData from a recent deposit
       const relayData = await fetchLatestRelayData();
       if (!relayData) {
         log.warn("No recent deposits found, skipping...");
@@ -110,7 +106,6 @@ export async function quoteLoop() {
 
       const repaymentChainId = BigInt(origin);
 
-      // 5) Profit analysis (exact gas estimate, safety, gas cap)
       let exact: {
         blockedByGasCap: boolean;
         gas: bigint;
@@ -168,7 +163,6 @@ export async function quoteLoop() {
         continue;
       }
 
-      // 6) Simulate before sending to avoid gas loss if already filled
       const pk = process.env.FILLER_PK;
       if (!pk) throw new Error("FILLER_PK missing in .env");
       const account = privateKeyToAccount(pk as `0x${string}`);
@@ -194,10 +188,9 @@ export async function quoteLoop() {
         });
       } catch (simErr: any) {
         log.warn({ err: simErr?.message }, "⏭️ simulation failed, skipping tx");
-        continue; // skip sending if simulation reverts
+        continue;
       }
 
-      // 7) Send the fill transaction (with a small gas buffer)
       const wallet = createWalletClient({
         account,
         chain: {

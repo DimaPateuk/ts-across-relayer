@@ -43,14 +43,12 @@ async function run() {
 
   const account = privateKeyToAccount(pk as `0x${string}`);
 
-  // wallet client for writes (txs)
   const wallet = createWalletClient({
     account,
     chain,
     transport: http(getRpc(chainId)),
   });
 
-  // public client for reads (state queries)
   const pub = createPublicClient({
     chain,
     transport: http(getRpc(chainId)),

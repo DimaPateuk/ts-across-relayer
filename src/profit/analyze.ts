@@ -17,7 +17,6 @@ export async function analyzeQuote(
 ) {
   const est = await estimateFillGas(destChainId, relayData, repaymentChainId);
 
-  // Block if gas spikes beyond your cap
   if (est.gasPriceGwei > GAS_PRICE_CAP_GWEI) {
     return {
       blockedByGasCap: true as const,
@@ -30,7 +29,6 @@ export async function analyzeQuote(
     };
   }
 
-  // Apply safety multiplier to estimated cost
   const costEthBuffered = est.costEth * GAS_SAFETY_MULT;
   const feeEth = Number(formatUnits(feeTotalWei, 18));
   const profitEth = feeEth - costEthBuffered;

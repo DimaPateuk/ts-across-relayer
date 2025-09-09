@@ -12,13 +12,12 @@ export type RelayDataV3 = {
   outputAmount: bigint;
   originChainId: bigint;
   exclusiveRelayer: Address;
-  quoteTimestamp: number; // uint32
-  fillDeadline: number; // uint32
-  exclusivityDeadline: number; // uint32
+  quoteTimestamp: number;
+  fillDeadline: number;
+  exclusivityDeadline: number;
   message: Bytes;
 };
 
-// Minimal ABI for SpokePool.fillV3Relay((...), uint256)
 export const SPOKE_ABI = [
   {
     type: "function",
@@ -50,9 +49,9 @@ export const SPOKE_ABI = [
 ] as const;
 
 export const SPOKE_POOL: Record<number, Address> = {
-  1: "0x5c7BCd6E7De5423a257D81B442095A1a6ced35C5", // Ethereum_SpokePool
-  42161: "0xe35e9842fceaca96570b734083f4a58e8f7c5f2a", // Arbitrum_SpokePool
-  10: "0x6f26Bf09B1C792e3228e5467807a900A503c0281", // Optimism_SpokePool
+  1: "0x5c7BCd6E7De5423a257D81B442095A1a6ced35C5",
+  42161: "0xe35e9842fceaca96570b734083f4a58e8f7c5f2a",
+  10: "0x6f26Bf09B1C792e3228e5467807a900A503c0281",
 };
 export const V3_FUNDS_DEPOSITED = parseAbiItem(
   "event V3FundsDeposited(address indexed depositor, address indexed recipient, address indexed inputToken, address outputToken, uint256 inputAmount, uint256 outputAmount, uint256 originChainId, address exclusiveRelayer, uint32 quoteTimestamp, uint32 fillDeadline, uint32 exclusivityDeadline, bytes message)"

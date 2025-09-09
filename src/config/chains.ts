@@ -34,7 +34,7 @@ export const chainFromId = (id: number) => {
 };
 
 /* ----- core runtime knobs ----- */
-export const CHAINS = parseChains(); // e.g. "1,10,42161" or "11155111,11155420"
+export const CHAINS = parseChains();
 export const TARGET_DEST = envNum("TARGET_DEST", 10);
 export const FETCH_ORIGIN_CHAIN_ID = envNum("FETCH_ORIGIN_CHAIN_ID", 1);
 export const FETCH_LOOKBACK_BLOCKS = BigInt(
@@ -53,9 +53,10 @@ export const FILLER_ADDRESS = getAddress(
 );
 
 /* ----- per-chain maps built from simple env vars ----- */
-export const RPC_URLS = buildRpcMap(CHAINS); // reads RPC_{id}
-export const WETH: Record<number, Address> = buildWethMap(CHAINS); // reads WETH_{id}
-export const SPOKE_POOL: Record<number, Address> = buildSpokePoolMap(CHAINS); // reads SPOKEPOOL_{id}
+export const RPC_URLS = buildRpcMap(CHAINS);
+console.log("RPC_URLS:", RPC_URLS);
+export const WETH: Record<number, Address> = buildWethMap(CHAINS);
+export const SPOKE_POOL: Record<number, Address> = buildSpokePoolMap(CHAINS);
 
 /* ----- helpers & clients ----- */
 export const getRpc = (chainId: number) => {
