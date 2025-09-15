@@ -1,12 +1,12 @@
 import "dotenv/config";
 import { formatUnits } from "viem";
 import { getPublic } from "../clients/public";
+import { V3_FUNDS_DEPOSITED, type RelayDataV3 } from "../across/estimator";
 import {
+  FETCH_LOOKBACK_BLOCKS,
+  FETCH_ORIGIN_CHAIN_ID,
   SPOKE_POOL,
-  V3_FUNDS_DEPOSITED,
-  type RelayDataV3,
-} from "../across/estimator";
-import { FETCH_LOOKBACK_BLOCKS, FETCH_ORIGIN_CHAIN_ID } from "../config/chains";
+} from "../config/chains";
 
 async function run() {
   const originChainId = FETCH_ORIGIN_CHAIN_ID;

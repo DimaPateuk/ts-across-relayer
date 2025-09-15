@@ -13,9 +13,7 @@
     "fetch:deposit:mainnet": "dotenv -e .env.mainnet -- tsx src/tools/fetchDeposit.ts",
     "fetch:deposit:testnet": "dotenv -e .env.testnet -- tsx src/tools/fetchDeposit.ts",
     "repay:watch:mainnet": "dotenv -e .env.mainnet -- WATCH=1 tsx src/tools/watchRepayments.ts",
-    "repay:watch:testnet": "dotenv -e .env.testnet -- WATCH=1 tsx src/tools/watchRepayments.ts",
-    "bridge:testnet": "dotenv -e .env.testnet -- tsx src/tools/bridgeToOp.ts",
-    "checkDeposit:testnet": "dotenv -e .env.testnet -- tsx src/tools/checkDeposit.ts"
+    "repay:watch:testnet": "dotenv -e .env.testnet -- WATCH=1 tsx src/tools/watchRepayments.ts"
   },
   "author": "",
   "license": "ISC",

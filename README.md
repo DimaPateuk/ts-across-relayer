@@ -103,3 +103,64 @@ When profitable:
 - Always start small (e.g., 0.002–0.003 ETH bridged).  
 - Profits on testnet are **just for testing**; mainnet relays are competitive.  
 - Use different `.env` files for **testnet** and **mainnet** configs.  
+
+## 🔑 Filler Address Across Chains
+
+Your `FILLER_ADDRESS` is the **same** on every EVM-compatible chain (Ethereum, Optimism, Arbitrum, Sepolia testnet, OP Sepolia, etc.).  
+This is because an Ethereum account is just a keypair — the derived public address doesn’t change between networks.
+
+⚠️ Important: while the address is the same, the **balances are chain-specific**.  
+You must fund your filler separately on each chain you want to operate on.
+
+---
+
+## 💰 How much to fund on each chain?
+
+- **Destination chain (TARGET_DEST, e.g. Optimism)**  
+  - Needs **gas ETH**: ~0.001–0.005 ETH is enough to start (each fill costs ~0.0001–0.0003 ETH).  
+  - Needs **WETH**: at least the `AMOUNT_ETH` you want to relay (e.g. 0.001–0.01 WETH).  
+  - ✅ This is the most important chain to fund because you front the liquidity here.
+
+- **Origin chain (FETCH_ORIGIN_CHAIN_ID, e.g. Ethereum)**  
+  - You don’t need to hold tokens here to fill.  
+  - Only required for **watching deposits** (RPC calls).  
+  - Just keep a **tiny bit of ETH** (0.001) if you plan to also bridge out, but not required for filling.
+
+- **Repayment chain (REPAY_CHAIN_ID, usually Ethereum)**  
+  - This is where your profits are **paid back** (e.g., WETH on Ethereum L1).  
+  - You don’t need to pre-fund here for filling, but you may want ~0.001 ETH for gas if you plan to move/unwrap profits later.
+
+---
+
+## 🧮 Example starter setup (testnet)
+
+- On **OP Sepolia** (destination):
+  - 0.003 ETH bridged from Sepolia → OP Sepolia.
+  - Wrap 0.001 ETH into WETH.
+  - Leave 0.002 ETH as gas.
+
+- On **Sepolia (origin)**:
+  - No WETH needed.
+  - Optional: 0.001 ETH for bridge replays.
+
+---
+
+## 🧮 Example starter setup (mainnet)
+
+- On **Optimism mainnet (destination)**:
+  - ~0.02 ETH (enough for 50–100 fills).
+  - ~0.01 WETH (to front fills of size 0.01 WETH).
+
+- On **Ethereum mainnet (repayment)**:
+  - No upfront WETH needed.
+  - Keep ~0.005 ETH if you want to unwrap or move profits.
+
+- On **Arbitrum** (if you include it in CHAINS):
+  - Similar to Optimism: ~0.01 ETH + 0.01 WETH.
+
+---
+
+👉 TL;DR  
+- Same `FILLER_ADDRESS` everywhere.  
+- Fund **ETH + WETH on the destination chain**.  
+- Only minimal ETH elsewhere.  

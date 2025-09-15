@@ -17,11 +17,12 @@ import {
   MIN_PROFIT_ETH,
   GAS_PRICE_CAP_GWEI,
   GAS_SAFETY_MULT,
+  SPOKE_POOL,
 } from "../config/chains";
 import { erc20Balance } from "../tokens/erc20";
 import { analyzeQuote } from "../profit/analyze";
 import { fetchLatestRelayData } from "../across/fetchRelayData";
-import { SPOKE_POOL, SPOKE_ABI } from "../across/estimator";
+import { SPOKE_ABI } from "../across/estimator";
 
 const log = pino({
   transport: {
@@ -62,19 +63,19 @@ export async function quoteLoop() {
         inputAmount: parseEther(AMOUNT_ETH),
       });
 
-      log.info(
-        {
-          origin,
-          dest,
-          out: quote.deposit.outputAmount.toString(),
-          feeWei: quote.fees.totalRelayFee.total.toString(),
-        },
-        "quote"
-      );
+      // log.info(
+      //   {
+      //     origin,
+      //     dest,
+      //     out: quote.deposit.outputAmount.toString(),
+      //     feeWei: quote.fees.totalRelayFee.total.toString(),
+      //   },
+      //   "quote"
+      // );
 
       const needWei = quote.deposit.outputAmount;
       const needEth = Number(formatUnits(needWei, 18));
-      log.info({ origin, dest, needEth: needEth.toFixed(6) }, "✅ READY");
+      // log.info({ origin, dest, needEth: needEth.toFixed(6) }, "✅ READY");
 
       const haveWei = await erc20Balance(dest, outputToken, FILLER_ADDRESS);
       const haveEth = Number(formatUnits(haveWei, 18));
@@ -93,10 +94,10 @@ export async function quoteLoop() {
         continue;
       }
 
-      log.info(
-        { dest, haveEth: haveEth.toFixed(6), needEth: needEth.toFixed(6) },
-        "🟢 ACTIONABLE"
-      );
+      // log.info(
+      //   { dest, haveEth: haveEth.toFixed(6), needEth: needEth.toFixed(6) },
+      //   "🟢 ACTIONABLE"
+      // );
 
       const relayData = await fetchLatestRelayData();
       if (!relayData) {

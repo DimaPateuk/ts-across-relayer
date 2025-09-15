@@ -1,6 +1,10 @@
 import { getPublic } from "../clients/public";
-import { SPOKE_POOL, V3_FUNDS_DEPOSITED, type RelayDataV3 } from "./estimator";
-import { FETCH_ORIGIN_CHAIN_ID, FETCH_LOOKBACK_BLOCKS } from "../config/chains";
+import { V3_FUNDS_DEPOSITED, type RelayDataV3 } from "./estimator";
+import {
+  FETCH_ORIGIN_CHAIN_ID,
+  FETCH_LOOKBACK_BLOCKS,
+  SPOKE_POOL,
+} from "../config/chains";
 
 /**
  * Fetch the most recent V3FundsDeposited from origin chain.
