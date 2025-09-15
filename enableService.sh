@@ -5,9 +5,9 @@ pwd
 git pull
 
 
-# systemctl stop ts-across-relayer
+systemctl stop ts-across-relayer
 
-# rm /lib/systemd/system/ts-across-relayer.service
+rm /lib/systemd/system/ts-across-relayer.service
 
 cp ./ts-across-relayer.service /lib/systemd/system/ts-across-relayer.service
 

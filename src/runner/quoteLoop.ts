@@ -101,7 +101,7 @@ export async function quoteLoop() {
 
       const relayData = await fetchLatestRelayData();
       if (!relayData) {
-        log.warn("No recent deposits found, skipping...");
+        // log.warn("No recent deposits found, skipping...");
         continue;
       }
 

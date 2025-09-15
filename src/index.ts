@@ -10,7 +10,6 @@ async function main() {
 
     inProgress = true;
 
-    console.log(1);
     quoteLoop()
       .then(() => {
         inProgress = false;
