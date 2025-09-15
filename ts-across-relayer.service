@@ -1,10 +1,10 @@
 [Unit]
-Description=uniswap-a-b-c
+Description=ts-across-relayer
 After=network.target
 
 [Service]
 WorkingDirectory=/root/ts-across-relayer
-ExecStart=/root/ts-across-relayer/startService.sh uniswap-a-b-c
+ExecStart=/root/ts-across-relayer/startService.sh
 Type=simple
 User=root
 Group=root
