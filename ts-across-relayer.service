@@ -1,0 +1,15 @@
+[Unit]
+Description=uniswap-a-b-c
+After=network.target
+
+[Service]
+WorkingDirectory=/root/ts-across-relayer
+ExecStart=/root/ts-across-relayer/startService.sh uniswap-a-b-c
+Type=simple
+User=root
+Group=root
+Restart=on-failure
+
+
+[Install]
+WantedBy=multi-user.target
