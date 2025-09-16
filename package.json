@@ -4,16 +4,7 @@
   "description": "",
   "main": "index.ts",
   "scripts": {
-    "dev:mainnet": "dotenv -e .env.mainnet -- tsx src/index.ts",
-    "dev:testnet": "dotenv -e .env.testnet -- tsx src/index.ts",
-    "balances:mainnet": "dotenv -e .env.mainnet -- tsx src/tools/balances.ts",
-    "balances:testnet": "dotenv -e .env.testnet -- tsx src/tools/balances.ts",
-    "weth:mainnet": "dotenv -e .env.mainnet -- tsx src/tools/weth.ts",
-    "weth:testnet": "dotenv -e .env.testnet -- tsx src/tools/weth.ts",
-    "fetch:deposit:mainnet": "dotenv -e .env.mainnet -- tsx src/tools/fetchDeposit.ts",
-    "fetch:deposit:testnet": "dotenv -e .env.testnet -- tsx src/tools/fetchDeposit.ts",
-    "repay:watch:mainnet": "dotenv -e .env.mainnet -- WATCH=1 tsx src/tools/watchRepayments.ts",
-    "repay:watch:testnet": "dotenv -e .env.testnet -- WATCH=1 tsx src/tools/watchRepayments.ts"
+    "dev:mainnet": "dotenv -e .env.mainnet -- tsx src/index.ts"
   },
   "author": "",
   "license": "ISC",
